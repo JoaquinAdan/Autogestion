@@ -75,6 +75,24 @@ body {
 .input:focus {
   height: 24px;
 }
+.eye-container {
+position: relative;
+}
+.eye-position {
+position: absolute;
+right: 5px;
+bottom: 5px;
+}
+.eye {
+  width: 20px;
+  height: 25px;
+}
+.eye-close {
+color: #4c1c64;
+}
+.eye-open {
+color: #4f85c8;
+}
 .padlock {
   position: absolute;
   top: 9px;

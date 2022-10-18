@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import UserContext from "./userContext";
 
+const dominio = "http://192.168.10.82:4026/api";
+const URL = `${dominio}/Auth/create`;
+
 const UserState = (props) => {
   const initialState = "";
   const [nameDescription, setNameDescription] = useState("");
   const [inputNameText, setInputNameText] = useState(initialState);
   const [inputLastNameText, setInputLastNameText] = useState(initialState);
 
-  const URL = "http://192.168.10.82:4026/api/Auth/create";
   const callUser = async (user, pass) => {
     const credenciales = {
       username: user,
@@ -19,14 +21,15 @@ const UserState = (props) => {
       headers: { "content-type": "application/json" },
     });
     const data = await response.json();
-    setNameDescription(data.description)
+    setNameDescription(data.description);
+    localStorage.setItem("namedescription", data.description)
     if (!response.ok) {
       return null;
     } else {
       return await data;
     }
-    
   };
+
   return (
     <UserContext.Provider
       value={{

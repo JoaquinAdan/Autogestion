@@ -6,8 +6,18 @@ const Home = ({ openSide }) => {
       className="title-bienvenidos"
       style={
         openSide
-          ? { marginLeft: "200px", transition: ".3s ease" }
-          : { marginLeft: "20px", transition: ".3s ease" }
+          ? {
+              marginLeft: "200px",
+              transition: ".3s ease",
+              marginTop: "400px",
+              marginBottom: "500px",
+            }
+          : {
+              marginLeft: "20px",
+              transition: ".3s ease",
+              marginTop: "400px",
+              marginBottom: "500px",
+            }
       }
     >
       ¡Bienvenido!

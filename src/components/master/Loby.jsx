@@ -5,15 +5,16 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { BsBox } from "react-icons/bs";
 import { BsPeopleFill } from "react-icons/bs";
 import { HiOutlineHome } from "react-icons/hi";
-import { FiLogOut } from "react-icons/fi";
 import TestComponent from "./TestComponent";
 import House from "./House";
 import "../../Loby.css";
-import { Link } from "react-router-dom";
 
 function Loby() {
   const [openSide, setOpenSide] = useState(false);
   const [changePage, setChangePage] = useState("");
+  const [nameDesc, setNameDesc] = useState("")
+
+ 
   return (
     <div
       id="home"
@@ -26,7 +27,7 @@ function Loby() {
         marginBottom: "-40px",
       }}
     >
-      <Header openSide={openSide}/>
+      <Header openSide={openSide} nameDesc={nameDesc}/>
       <div className="side-container">
         <GiHamburgerMenu
           className="hamburger"
@@ -35,12 +36,6 @@ function Loby() {
         />
         {openSide ? (
           <div className="icon-container">
-            <Link style={{ color: "#fff" }} to="/">
-              <FiLogOut
-                className="icon-side"
-                style={{ transform: "scale(-1)" }}
-              />
-            </Link>
             {/* <FiLogOut
               className="icon-side"
               onClick={() => (location.href = "http://localhost:5173/")}

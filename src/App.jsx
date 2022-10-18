@@ -6,6 +6,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import UserState from "./context/user/UserState";
 
 function App() {
+
+  // useEffect(() => {
+  //   localStorage.removeItem("token")
+  // }, [window.BeforeUnloadEvent])
+  
   return (
     <UserState>
       <BrowserRouter>

@@ -10,7 +10,7 @@ const Cards = (users) => {
           <FiUser style={{ width: "25px", height: "25px" }} />
         </div>
         {users.users.length}
-        <p className="text-card-user">Usuarios totales</p>
+        <p className="text-card-user">Ancianos totales</p>
       </div>
       <div className="total-amount-container">
         <div className="icon-amount-container">

@@ -1,9 +1,26 @@
 import React, { useContext, useState } from "react";
+import { Link } from "react-router-dom";
+import { FiLogOut } from "react-icons/fi";
+import { RiArrowDownSLine } from "react-icons/ri";
 import UserContext from "../../context/user/userContext";
 
-const Header = ({ openSide }) => {
-  const {nameDescription} = useContext(UserContext);
-const [settings, setSettings] = useState(false)
+const Header = ({ openSide, nameDesc }) => {
+  const [settings, setSettings] = useState(false);
+  const usuarioNombre = localStorage.getItem("namedescription")
+  // const today = new Date();
+  // const day = today.getDate();
+  // const month = today.getMonth() + 1;
+
+  // switch (month) {
+  //   case 9:
+  //     return "sep";
+  //   case 10:
+  //     return "oct"
+  //   case 11:
+  //     "nov";
+  //     break;
+  // }
+
   return (
     <div
       className="header"
@@ -12,13 +29,13 @@ const [settings, setSettings] = useState(false)
           ? {
               transition: ".3s ease",
               position: "absolute",
-              left: "100px",
+              paddingLeft: "230px",
               margin: "auto",
             }
           : {
               transition: ".3s ease",
               position: "absolute",
-              left: "10px",
+              paddingLeft: "80px",
               margin: "auto",
             }
       }
@@ -28,17 +45,40 @@ const [settings, setSettings] = useState(false)
         alt="logo municipal"
         className="logo-header"
       />
-      <div className="user-container" onClick={() => {setSettings(!settings)}}>
-        <div className="img-user-container">
-          <img
-            src="/Admin-icon.png"
-            alt="perfil"
-            className="user-img"
-          />
+      {/* <div className="calendar-container">
+        <div className="ring ring-right"></div>
+        <div className="ring ring-left"></div>
+        <div className="paper-container">
+          <div className="month">{month}</div>
+          <div className="day">{day}</div>
         </div>
-        <div>{nameDescription} </div>
-        🔽
-        {settings ? <div>hola</div>: null}
+      </div> */}
+      <div
+        className="user-container"
+        onClick={() => {
+          setSettings(!settings);
+        }}
+      >
+        <div className="img-user-container">
+          <img src="/Admin-icon.png" alt="perfil" className="user-img" />
+        </div>
+        <div>{usuarioNombre === "" ? "Usuario Default" : usuarioNombre} </div>
+        <RiArrowDownSLine className="icon-arrow" />
+        {settings ? (
+          <div className="settings-container">
+            <Link
+              to="/"
+              className="button-settings"
+              onClick={() => {
+                localStorage.removeItem("token")
+                localStorage.removeItem("namedescription")
+              }}
+            >
+              <FiLogOut className="icon-settings" />
+              <div className="text-settings">Cerrar sesion </div>
+            </Link>
+          </div>
+        ) : null}
       </div>
     </div>
   );

@@ -1,16 +1,30 @@
 import React, { useState } from "react";
 import FormCreateUser from "./FormCreateUser";
 import TextField from "@mui/material/TextField";
+import { callContribuyente } from "../../api";
+import { useNavigate } from "react-router-dom";
 
 const Searcher = ({ searcher, openSide }) => {
   const [popUp, setPopUp] = useState(false);
   const [popUpPage, setPopUpPage] = useState(false);
+  const [contribuyentes, setContribuyentes] = useState([]);
   const [idContribuyente, setIdContribuyente] = useState("");
-  const [selected, setSelected] = useState("");
+  const navigate = useNavigate();
+  const t = localStorage.getItem("token");
 
-  const handleIdChange = (e) => {
-    // console.log(e.target.value);
-    setIdContribuyente(e.target.value);
+  const handleNameChange = async (e) => {
+    // console.log(e.target.value.length)
+    if (e.target.value.length > 3) {
+      const toSearch = e.target.value;
+      let data = await callContribuyente(toSearch, t);
+      if (!data) {
+        localStorage.removeItem("token");
+        navigate("/");
+      } else {
+        setContribuyentes(data);
+      }
+      // console.log(data);
+    }
   };
   return (
     <div className="searcher-container">
@@ -40,8 +54,8 @@ const Searcher = ({ searcher, openSide }) => {
               onClick={() => {
                 setPopUp(false);
                 setPopUpPage(false);
-                setSelected("")
-                setIdContribuyente("")
+                setContribuyentes([]);
+                setIdContribuyente("");
               }}
             >
               X
@@ -52,71 +66,66 @@ const Searcher = ({ searcher, openSide }) => {
                   className="input-container input-contribuyente"
                   style={{ alignItems: "start" }}
                 >
-                  <h1 className="title-form">Numero de contribuyente</h1>
+                  <h1 className="title-form">Nombre de contribuyente</h1>
                   <TextField
                     required
-                    onChange={handleIdChange}
+                    onChange={handleNameChange}
                     id="contribuyente"
-                    label="Contribuyente Id"
+                    label="Nombre del Contribuyente"
                     className="input-ayuda-numero"
                   />
                 </div>
-                <table className="table-contribuyente">
-                  <thead className="thead-contribuyente">
-                    <tr className="thead-line-contribuyente">
-                      <th>Nombre</th>
-                      <th>Cuit</th>
-                    </tr>
-                  </thead>
-                  <tbody className="tbody-contribuyente">
-                    <tr
-                      style={
-                        selected === "Fernando Aguila"
-                          ? { backgroundColor: "#1c87e580" }
-                          : null
-                      }
-                      className="tbody-line-contribuyente"
-                      onClick={() => setSelected("Fernando Aguila")}
-                    >
-                      <td className="tbody-name">Fernando Aguila</td>
-                      <td className="tbody-cuit">123456789</td>
-                    </tr>
-                    <tr
-                      style={
-                        selected === "Teo Gutierrez"
-                          ? { backgroundColor: "#1c87e580" }
-                          : null
-                      }
-                      className="tbody-line-contribuyente"
-                      onClick={() => setSelected("Teo Gutierrez")}
-                    >
-                      <td className="tbody-name">Teo Gutierrez</td>
-                      <td className="tbody-cuit">123456789</td>
-                    </tr>
-                    <tr
-                      style={
-                        selected === "Botella de Plastico"
-                          ? { backgroundColor: "#1c87e580" }
-                          : null
-                      }
-                      className="tbody-line-contribuyente"
-                      onClick={() => setSelected("Botella de Plastico")}
-                    >
-                      <td className="tbody-name">Botella de Plastico</td>
-                      <td className="tbody-cuit">123456789</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <div style={{ alignSelf: "flex-start", paddingLeft: "5%" }}>
+                <div className="table-contribuyente">
+                  <div className="thead-contribuyente">
+                    <div>ID</div>
+                    <div>Nombre</div>
+                    <div>Cuit</div>
+                  </div>
+                  <div className="contribuyente-overflow">
+                    <div className="tbody-container">
+                      {contribuyentes.map((contribuyente) => (
+                        <div
+                          className="tbody-contribuyente"
+                          onClick={() => {
+                            setIdContribuyente(contribuyente.id);
+                          }}
+                          key={contribuyente.id}
+                          style={
+                            idContribuyente == contribuyente.id
+                              ? { backgroundColor: "#1c87e580" }
+                              : null
+                          }
+                        >
+                          <div
+                            className="data-contribuyente"
+                            style={{ flex: 0.5 }}
+                          >
+                            {contribuyente.id}
+                          </div>
+                          <div className="data-contribuyente">
+                            {contribuyente.nombre.toLowerCase()}
+                          </div>
+                          <div
+                            className="data-contribuyente"
+                            style={{ flex: 0.8 }}
+                          >
+                            {contribuyente.cuit}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ alignSelf: "flex-start" }}>
                   <button
                     className="button-crear-contribuyente"
                     style={
-                      !selected || idContribuyente === ""
+                      idContribuyente === ""
                         ? { backgroundColor: "gray", cursor: "auto" }
                         : null
                     }
                     onClick={() => {
-                      if (selected !== "" && idContribuyente !== "") {
+                      if (idContribuyente !== "") {
                         setPopUpPage(!popUpPage);
                       }
                     }}
@@ -126,7 +135,7 @@ const Searcher = ({ searcher, openSide }) => {
                 </div>
               </form>
             ) : (
-              <FormCreateUser />
+              <FormCreateUser idContribuyente={idContribuyente} />
             )}
           </div>
           <div
@@ -134,8 +143,8 @@ const Searcher = ({ searcher, openSide }) => {
             onClick={() => {
               setPopUp(false);
               setPopUpPage(false);
-              setIdContribuyente("")
-              setSelected("")
+              setContribuyentes([]);
+              setIdContribuyente("");
             }}
           ></div>
         </>

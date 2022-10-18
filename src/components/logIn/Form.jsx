@@ -4,6 +4,7 @@ import { useState, useEffect, useContext } from "react";
 import TextField from "@mui/material/TextField";
 import { useNavigate } from "react-router-dom";
 import UserContext from "../../context/user/userContext";
+import { FiEye, FiEyeOff } from "react-icons/fi";
 
 const Form = () => {
   const {
@@ -21,23 +22,7 @@ const Form = () => {
   // const [apellido, setApellido] = useState("");
   const [validation, setValidation] = useState(false);
   const [error, setError] = useState("");
-
-  // const URL = "http://192.168.10.82:4026/api/Auth/create";
-  // const callUser = async (user, pass) => {
-  //   const credenciales = {
-  //     username: user,
-  //     password: pass,
-  //   };
-  //   const response = await fetch(URL, {
-  //     method: "POST",
-  //     body: JSON.stringify(credenciales),
-  //     headers: { "content-type": "application/json" },
-  //   });
-  //   if (!response.ok) {
-  //     return null;
-  //   }
-  //   return await response.json();
-  // };
+  const [password, setPasword] = useState(false);
 
   //MANEJADOR DE INPUTS
   const inputN = document.getElementById("input-name");
@@ -53,7 +38,7 @@ const Form = () => {
     inputNameText !== "" && inputLastNameText !== "";
 
   const handleInputNameChange = (e) => {
-    // const text = e.target.value;
+    const text = e.target.value;
     // setInputNameText(text);
     if (dependencieChange) {
       setValidation(true);
@@ -86,6 +71,7 @@ const Form = () => {
       localStorage.removeItem("nombre", inputNameText);
       localStorage.removeItem("apellido", inputLastNameText);
       localStorage.removeItem("token");
+      localStorage.removeItem("namedescription");
       localStorage.setItem("toggle-switch", false);
     }
   };
@@ -191,20 +177,27 @@ const Form = () => {
           variant="standard"
           onChange={handleInputNameChange}
           className="input"
-          value={selected ? inputNameText : undefined}
+          // value={selected ? inputNameText : undefined}
+          value={inputNameText}
         />
       </div>
-      <div className="input-container">
+      <div className="input-container eye-container">
         <TextField
           error={error ? true : false}
           id="input-last-name"
           // label={selected ? inputLastNameText : "Apellido"}
           label="Contraseña"
+          type={password ? "text" : "password"}
           variant="standard"
           onChange={handleInputLastNameChange}
           className="input"
-          value={selected ? inputLastNameText : undefined}
+          // value={selected ? inputLastNameText : undefined}
+          value={inputLastNameText}
         />
+
+        <div className="eye-position" onClick={() => setPasword(!password)}>
+          {password ? <FiEyeOff className="eye eye-close" /> : <FiEye className="eye eye-open" />}
+        </div>
       </div>
       {error ? (
         <div className="error-relative">

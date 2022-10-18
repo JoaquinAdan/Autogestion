@@ -1,13 +1,34 @@
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Radio from "@mui/material/Radio";
+import { saveContribuyente } from "../../api";
+import { useNavigate } from "react-router-dom";
 
-const FormCreateUser = () => {
+const FormCreateUser = ({ idContribuyente }) => {
   const [orden, setOrden] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
   const [nombre, setNombre] = useState("");
   const [apellido, setApellido] = useState("");
   const [telefono, setTelefono] = useState("");
+  const navigate = useNavigate();
+  const t = localStorage.getItem("token");
+
+  const saveUser = async (e) => {
+    e.preventDefault();
+    let result = await saveContribuyente(
+      idContribuyente,
+      orden,
+      selectedValue,
+      nombre,
+      apellido,
+      telefono,
+      t
+    );
+    if (result == false) {
+      localStorage.removeItem("token")
+      navigate("/")
+    } 
+  };
 
   const validationCreate =
     orden === "" ||
@@ -17,10 +38,14 @@ const FormCreateUser = () => {
     telefono === "";
 
   const handleOrdenChange = (e) => {
-    setOrden(e.target.value);
+    setOrden(parseInt(e.target.value));
   };
   const handleRadioChange = (e) => {
-    setSelectedValue(e.target.value);
+    if (e.target.value === "tiene") {
+      setSelectedValue(true);
+    } else {
+      setSelectedValue(false);
+    }
   };
   const handleNombreChange = (e) => {
     setNombre(e.target.value);
@@ -60,7 +85,7 @@ const FormCreateUser = () => {
         <div className="radios-container">
           <div className="radio-container">
             <Radio
-              checked={selectedValue === "tiene"}
+              checked={selectedValue === true}
               onChange={handleRadioChange}
               value="tiene"
               name="radio-buttons"
@@ -70,7 +95,7 @@ const FormCreateUser = () => {
           </div>
           <div className="radio-container">
             <Radio
-              checked={selectedValue === "notiene"}
+              checked={selectedValue === false}
               onChange={handleRadioChange}
               value="notiene"
               name="radio-buttons"
@@ -124,9 +149,12 @@ const FormCreateUser = () => {
         </div>
         <button
           style={
-            validationCreate ? { backgroundColor: "gray", cursor: "auto" } : null
+            validationCreate
+              ? { backgroundColor: "gray", cursor: "auto" }
+              : null
           }
           className="button-crear"
+          onClick={saveUser}
         >
           Crear
         </button>
