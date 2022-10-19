@@ -30,6 +30,36 @@ export const callAncianos = async (toSearch, t) => {
   }
 };
 
+const URLAnciano = `${dominio}/Ancianos/`;
+export const callAnciano = async (idContribuyente, t) => {
+  const response = await fetch(`${URLAnciano}${idContribuyente}`, {
+    headers: {
+      Authorization: `Bearer ${t}`,
+    },
+  });
+  if (!response.ok) {
+    return false;
+  } else {
+    const data = await response.json();
+    return await data;
+  }
+};
+
+const URLCuotas = `${dominio}/Cuotas/`;
+export const callLiquidacion = async (idContribuyente, t) => {
+  const response = await fetch(`${URLCuotas}${idContribuyente}`, {
+    headers: {
+      Authorization: `Bearer ${t}`,
+    },
+  });
+  if (!response.ok) {
+    return false;
+  } else {
+    const data = await response.json();
+    return await data;
+  }
+};
+
 const URLCreate = `${dominio}/Ancianos`;
 export const saveContribuyente = async (id, ord, bool, nom, ape, tel, t) => {
   const credenciales = {

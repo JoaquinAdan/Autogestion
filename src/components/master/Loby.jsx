@@ -25,6 +25,7 @@ function Loby() {
         height: "90vh",
         marginTop: "40px",
         marginBottom: "-40px",
+        width: "1200px"
       }}
     >
       <Header openSide={openSide} nameDesc={nameDesc}/>

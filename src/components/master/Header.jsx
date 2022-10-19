@@ -6,7 +6,8 @@ import UserContext from "../../context/user/userContext";
 
 const Header = ({ openSide, nameDesc }) => {
   const [settings, setSettings] = useState(false);
-  const usuarioNombre = localStorage.getItem("namedescription")
+  const usuarioNombre = localStorage.getItem("namedescription");
+  const usuarioId = localStorage.getItem("iddescription");
   // const today = new Date();
   // const day = today.getDate();
   // const month = today.getMonth() + 1;
@@ -60,7 +61,11 @@ const Header = ({ openSide, nameDesc }) => {
         }}
       >
         <div className="img-user-container">
-          <img src="/Admin-icon.png" alt="perfil" className="user-img" />
+          <img
+            src={`http://testiis01.campana.gov.ar/Hacienda/Fotos/Administradores/${usuarioId}/Perfil.jpg`}
+            alt="perfil"
+            className="user-img"
+          />
         </div>
         <div>{usuarioNombre === "" ? "Usuario Default" : usuarioNombre} </div>
         <RiArrowDownSLine className="icon-arrow" />
@@ -70,8 +75,9 @@ const Header = ({ openSide, nameDesc }) => {
               to="/"
               className="button-settings"
               onClick={() => {
-                localStorage.removeItem("token")
-                localStorage.removeItem("namedescription")
+                localStorage.removeItem("token");
+                localStorage.removeItem("namedescription");
+                localStorage.removeItem("iddescription");
               }}
             >
               <FiLogOut className="icon-settings" />

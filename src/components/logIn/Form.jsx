@@ -72,6 +72,7 @@ const Form = () => {
       localStorage.removeItem("apellido", inputLastNameText);
       localStorage.removeItem("token");
       localStorage.removeItem("namedescription");
+      localStorage.removeItem("iddescription");
       localStorage.setItem("toggle-switch", false);
     }
   };

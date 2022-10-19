@@ -1,42 +1,33 @@
 import React from "react";
 import { HiPencilAlt } from "react-icons/hi";
-import ClientMore from "./ClientMore";
+import ClientLiquidacion from "./ClientLiquidacion";
+import ClientBaja from "./ClientBaja";
 import { useEffect, useState } from "react";
 import Cards from "./Cards";
 import { HiArrowUp } from "react-icons/hi";
 import Searcher from "./Searcher";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { callAncianos } from "../../api";
+import { RiInformationLine } from "react-icons/ri";
+import { callAnciano } from "../../api";
 
 const SearchComponent = ({ openSide }) => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState(["id", true]);
-  const [check, setCheck] = useState(true);
   const [loading, setLoading] = useState(true);
   const [more, setMore] = useState(false);
+  const [baja, setBaja] = useState(false);
+  const [idContribuyente, setIdContribuyente] = useState("")
   const t = localStorage.getItem("token");
 
-  // const URL =
-  //   "https://633ee4220dbc3309f3c04d34.mockapi.io/client-information/client-information";
-  // const callApi = async () => {
-  //   setLoading(true);
-  //   const response = await fetch(URL);
-  //   const data = await response.json();
-  //   data.map((e) => {
-  //     let random = Math.random();
-  //     let b = random < 0.5;
-  //     e.payment = b;
-  //     return e;
-  //   });
-  //   setUsers(data);
-  //   setLoading(false);
-  //   // console.log(data);
-  // };
-
   const searcher = async (e) => {
-    let ancianos = await callAncianos(e.target.value, t);
-    setUsers(ancianos);
+    if (e.target.value.length != []) {
+      let ancianos = await callAncianos(e.target.value, t);
+      setUsers(ancianos);
+    } else {
+      setUsers([]);
+    }
     console.log(search);
     // console.log(e.target.value)
   };
@@ -44,18 +35,6 @@ const SearchComponent = ({ openSide }) => {
   const sorter = (field) => {
     setSortField([field, !sortField[1]]);
   };
-  // console.log(users);
-  const results = !search
-    ? users
-    : users.filter((dato) =>
-        dato.cuit.toString().toLowerCase().includes(search.toLocaleLowerCase())
-      );
-
-  useEffect(() => {
-    // callApi();
-    setLoading(true);
-    setLoading(false);
-  }, []);
 
   useEffect(() => {
     // console.log(sortField);
@@ -76,25 +55,13 @@ const SearchComponent = ({ openSide }) => {
     });
     setUsers([...users]);
   }, [sortField]);
+  // console.log(users);
 
-  const checkAll = () => {
-    document
-      .querySelectorAll("input[type=checkbox]")
-      .forEach(function (checkElement) {
-        checkElement.checked = true;
-      });
-  };
-  const uncheckAll = () => {
-    document
-      .querySelectorAll("input[type=checkbox]")
-      .forEach(function (checkElement) {
-        checkElement.checked = false;
-      });
-  };
-  const checked = () => {
-    setCheck(!check);
-    check ? checkAll() : uncheckAll();
-  };
+  useEffect(() => {
+    setLoading(true);
+    setLoading(false);
+    // callApi();
+  }, []);
 
   return (
     <>
@@ -136,8 +103,8 @@ const SearchComponent = ({ openSide }) => {
           <div className="table-container">
             <div className="thead-container">
               <div className="data-head-user" onClick={() => sorter("id")}>
-                <div>
-                  ID
+                <div className="title-table-container">
+                  ID°
                   <HiArrowUp
                     style={
                       sortField[1] && sortField[0] === "id"
@@ -146,32 +113,48 @@ const SearchComponent = ({ openSide }) => {
                     }
                   />
                 </div>
-                
+                {users.map((user) => (
+                  <div key={user.id} className="data-user-container">
+                    {user.id}
+                  </div>
+                ))}
               </div>
-
               <div
                 className="data-head-user"
-                onClick={() => sorter("name")}
-                style={{ flex: 0.8 }}
+                onClick={() => sorter("nombre")}
+                style={{ width: "250px" }}
               >
-                <div>
+                <div className="title-table-container">
+                  <img
+                    src="nombre.svg"
+                    alt="nombre"
+                    className="icon-title-table"
+                  />
                   Nombre
                   <HiArrowUp
                     style={
-                      sortField[1] && sortField[0] === "name"
+                      sortField[1] && sortField[0] === "nombre"
                         ? { transition: ".4s", transform: "rotate(180deg)" }
                         : { transition: ".4s", transform: "rotate(0deg)" }
                     }
                   />
                 </div>
                 {users.map((user) => (
-                  <div key={user.id} className="data-user-container">
-                    {user.nombre}
+                  <div
+                    key={user.id}
+                    className="data-user-container user-nombre"
+                  >
+                    {user.nombre.toLowerCase()} {user.apellido?.toLowerCase()}
                   </div>
                 ))}
               </div>
-              <div onClick={() => sorter("cuit")} className="data-head-user">
-                <div>
+              <div
+                onClick={() => sorter("cuit")}
+                className="data-head-user"
+                style={{ width: "180px" }}
+              >
+                <div className="title-table-container">
+                  <img src="cuit.svg" alt="cuit" className="icon-title-table" />
                   Cuit
                   <HiArrowUp
                     style={
@@ -188,14 +171,20 @@ const SearchComponent = ({ openSide }) => {
                 ))}
               </div>
               <div
-                onClick={() => sorter("datealta")}
+                onClick={() => sorter("fechaAlta")}
                 className="data-head-user"
+                style={{ width: "180px" }}
               >
-                <div>
+                <div className="title-table-container">
+                  <img
+                    src="fechaalta.svg"
+                    alt="fecha alta"
+                    className="icon-title-table"
+                  />
                   Fecha alta
                   <HiArrowUp
                     style={
-                      sortField[1] && sortField[0] === "datealta"
+                      sortField[1] && sortField[0] === "fechaAlta"
                         ? { transition: ".4s", transform: "rotate(180deg)" }
                         : { transition: ".4s", transform: "rotate(0deg)" }
                     }
@@ -209,15 +198,21 @@ const SearchComponent = ({ openSide }) => {
               </div>
               <div
                 onClick={() => {
-                  sorter("datebaja");
+                  sorter("fechaBaja");
                 }}
                 className="data-head-user"
+                style={{ width: "180px" }}
               >
-                <div>
+                <div className="title-table-container">
+                  <img
+                    src="fechabaja.svg"
+                    alt="fecha baja"
+                    className="icon-title-table"
+                  />
                   Fecha baja
                   <HiArrowUp
                     style={
-                      sortField[1] && sortField[0] === "datebaja"
+                      sortField[1] && sortField[0] === "fechaBaja"
                         ? { transition: ".4s", transform: "rotate(180deg)" }
                         : { transition: ".4s", transform: "rotate(0deg)" }
                     }
@@ -225,12 +220,15 @@ const SearchComponent = ({ openSide }) => {
                 </div>
                 {users.map((user) => (
                   <div key={user.id} className="data-user-container">
-                    {user.fechaBaja === null ? "Vivo" : user.fechaBaja}
+                    {user.fechaBaja === null
+                      ? "Vivo"
+                      : user.fechaBaja.slice(0, 10)}
                   </div>
                 ))}
               </div>
               <div onClick={() => sorter("baja")} className="data-head-user">
-                <div>
+                <div className="title-table-container">
+                  <img src="baja.svg" alt="baja" className="icon-title-table" />
                   Baja
                   <HiArrowUp
                     style={
@@ -241,35 +239,61 @@ const SearchComponent = ({ openSide }) => {
                   />
                 </div>
                 {users.map((user) => (
-                  <div key={user.id} className="data-user-container">
-                    {user.fechaBaja === null ? "No" : "si"}
-                  </div>
-                ))}
-              </div>
-              <div className="data-head-user">
-                <div>Liquidación</div>
-                {users.map((user) => (
-                  <div key={user.id} className="data-user-container">
-                    <div>
-                      <div
-                        className="data-user-container pencil"
-                        onClick={() => setMore(!more)}
-                      >
-                        <HiPencilAlt />
-                      </div>
+                  <div key={user.id}>
+                    <div
+                      className="data-user-container"
+                      onClick={() => setBaja(!baja)}
+                    >
+                      {user.fechaBaja === null ? "No" : "Si" + " "}
+                      <RiInformationLine className="pencil" />
                     </div>
-                    {more ? (
-                      <ClientMore setMore={setMore} openSide={openSide} />
+                    {baja ? (
+                      <ClientBaja setBaja={setBaja} openSide={openSide} />
                     ) : null}
                   </div>
                 ))}
               </div>
+              <div className="data-head-user">
+                <div className="title-table-container">
+                  <img
+                    src="liquidacion.svg"
+                    alt="liquidacion"
+                    className="icon-title-table"
+                  />
+                  Liquidación
+                </div>
+                {users.map((user) => (
+                  <div key={user.id} className="data-user-container">
+                    <div>
+                      <div
+                        className="pencil"
+                        onClick={async () => {
+                          setMore(!more);
+                          const dataAnciano = await callAnciano(user.id, t);
+                          idContribuyente == "" ? setIdContribuyente(dataAnciano.idContribuyente) : setIdContribuyente("")
+                        }}
+                      >
+                        <HiPencilAlt />
+                      </div>
+                    </div>
+                    
+                  </div>
+                ))}
+                {more ? (
+                      <ClientLiquidacion
+                        setMore={setMore}
+                        openSide={openSide}
+                        idContribuyente={idContribuyente}
+                        setIdContribuyente={setIdContribuyente}
+                      />
+                    ) : null}
+              </div>
             </div>
-            <div className="tbody-container">
-              {/* {users.map((user) => (
+            {/* <div className="tbody-container">
+              {users.map((user) => (
                 <Client key={user.id} user={user} openSide={openSide} />
-              ))} */}
-            </div>
+              ))}
+            </div> */}
           </div>
         </div>
       )}

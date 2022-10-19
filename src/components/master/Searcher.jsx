@@ -4,6 +4,7 @@ import TextField from "@mui/material/TextField";
 import { callContribuyente } from "../../api";
 import { useNavigate } from "react-router-dom";
 
+
 const Searcher = ({ searcher, openSide }) => {
   const [popUp, setPopUp] = useState(false);
   const [popUpPage, setPopUpPage] = useState(false);

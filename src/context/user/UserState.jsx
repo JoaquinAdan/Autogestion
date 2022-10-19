@@ -7,6 +7,7 @@ const URL = `${dominio}/Auth/create`;
 const UserState = (props) => {
   const initialState = "";
   const [nameDescription, setNameDescription] = useState("");
+  const [idDescription, setIdDescription] = useState("");
   const [inputNameText, setInputNameText] = useState(initialState);
   const [inputLastNameText, setInputLastNameText] = useState(initialState);
 
@@ -22,7 +23,9 @@ const UserState = (props) => {
     });
     const data = await response.json();
     setNameDescription(data.description);
+    setIdDescription(data.description);
     localStorage.setItem("namedescription", data.description)
+    localStorage.setItem("iddescription", data.id)
     if (!response.ok) {
       return null;
     } else {
