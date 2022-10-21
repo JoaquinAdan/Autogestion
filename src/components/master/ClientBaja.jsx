@@ -1,10 +1,21 @@
 import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
 
-const ClientBaja = ({ setBaja, openSide }) => {
+const ClientBaja = ({
+  setBaja,
+  openSide,
+  idAnciano,
+  userName,
+  observacionBaja,
+}) => {
   const [observacion, setObservacion] = useState("");
   const [warning, setWarning] = useState(false);
+  const t = localStorage.getItem("token");
+  const dominio = "http://192.168.10.82:4026/api";
+  const URLBaja = `${dominio}/Ancianos/baja/`;
+  const navigate = useNavigate();
 
   const validationMore = observacion === "";
   const handleObservacionChange = (e) => {
@@ -30,14 +41,34 @@ const ClientBaja = ({ setBaja, openSide }) => {
           <>
             <div className="warning-container">
               <span className="text-warning-baja">
-                ¿Estas seguro que quieres darle de baja?
+                ¿Estas seguro que quieres darle de baja a {userName}?
               </span>
               <div className="buttons-warning-container">
                 <Button
                   style={{ width: "35%", fontWeight: "700" }}
                   variant="contained"
                   color="success"
-                  onClick={() => setWarning(!warning)}
+                  onClick={() => {
+                    const putBajaAnciano = async (obs) => {
+                      const credenciales = {
+                        observacionesBaja: obs,
+                      };
+                      const response = await fetch(`${URLBaja}${idAnciano}`, {
+                        method: "PUT",
+                        body: JSON.stringify(credenciales),
+                        headers: {
+                          Authorization: `Bearer ${t}`,
+                          "content-type": "application/json",
+                        },
+                      });
+                      if (!response.ok) {
+                        localStorage.removeItem("token");
+                        navigate("/");
+                      } 
+                    };
+                    
+                    putBajaAnciano(observacion);
+                  }}
                 >
                   Si, dar de baja
                 </Button>
@@ -60,7 +91,9 @@ const ClientBaja = ({ setBaja, openSide }) => {
           </>
         ) : null}
         <h1 className="title-form-baja">Observacion del anciano</h1>
-        <div className="container-observacion">No tiene observacion</div>
+        <div className="container-observacion">
+          {observacionBaja === null ? "No tiene observacion" : observacionBaja}
+        </div>
         <h1 className="title-form-baja">Dar de baja anciano</h1>
         <span className="text-baja">
           Para dar de baja a un anciano debe agregar una observacion.
@@ -68,7 +101,12 @@ const ClientBaja = ({ setBaja, openSide }) => {
         <div className="input-container-observacion">
           <TextField
             id="outlined-multiline-static"
-            label="Observaciones..."
+            label={
+              observacionBaja === null
+                ? "Observaciones..."
+                : "Este anciano ya tiene observacion"
+            }
+            disabled={observacionBaja === null ? false : true}
             multiline
             rows={3}
             onChange={handleObservacionChange}

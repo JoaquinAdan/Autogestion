@@ -8,19 +8,36 @@ const Header = ({ openSide, nameDesc }) => {
   const [settings, setSettings] = useState(false);
   const usuarioNombre = localStorage.getItem("namedescription");
   const usuarioId = localStorage.getItem("iddescription");
-  // const today = new Date();
-  // const day = today.getDate();
-  // const month = today.getMonth() + 1;
 
-  // switch (month) {
-  //   case 9:
-  //     return "sep";
-  //   case 10:
-  //     return "oct"
-  //   case 11:
-  //     "nov";
-  //     break;
-  // }
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.getMonth() + 1;
+  const months =
+    month == 1
+      ? "ene"
+      : month == 2
+      ? "feb"
+      : month == 3
+      ? "mar"
+      : month == 4
+      ? "abr"
+      : month == 5
+      ? "may"
+      : month == 6
+      ? "jun"
+      : month == 7
+      ? "jul"
+      : month == 8
+      ? "ago"
+      : month == 9
+      ? "sep"
+      : month == 10
+      ? "oct"
+      : month == 11
+      ? "nov"
+      : month == 12
+      ? "dic"
+      : null;
 
   return (
     <div
@@ -46,14 +63,14 @@ const Header = ({ openSide, nameDesc }) => {
         alt="logo municipal"
         className="logo-header"
       />
-      {/* <div className="calendar-container">
+      <div className="calendar-container">
         <div className="ring ring-right"></div>
         <div className="ring ring-left"></div>
         <div className="paper-container">
-          <div className="month">{month}</div>
+          <div className="month">{months.toUpperCase()}</div>
           <div className="day">{day}</div>
         </div>
-      </div> */}
+      </div>
       <div
         className="user-container"
         onClick={() => {
@@ -67,7 +84,7 @@ const Header = ({ openSide, nameDesc }) => {
             className="user-img"
           />
         </div>
-        <div>{usuarioNombre === "" ? "Usuario Default" : usuarioNombre} </div>
+        <div style={{fontWeight:"500"}}>{usuarioNombre === "" ? "Usuario Default" : usuarioNombre} </div>
         <RiArrowDownSLine className="icon-arrow" />
         {settings ? (
           <div className="settings-container">

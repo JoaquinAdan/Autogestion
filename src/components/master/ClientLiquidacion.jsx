@@ -1,43 +1,125 @@
 import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
-import { callLiquidacion } from "../../api";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import InputAdornment from "@mui/material/InputAdornment";
 import Button from "@mui/material/Button";
+import CurrencyInput from "react-currency-input-field";
+import { saveLiquidacion } from "../../api";
+import { useNavigate } from "react-router-dom";
+
+const meses = [
+  { mes: "Enero", valor: 1 },
+  { mes: "Febrero", valor: 2 },
+  { mes: "Marzo", valor: 3 },
+  { mes: "Abril", valor: 4 },
+  { mes: "Mayo", valor: 5 },
+  { mes: "Junio", valor: 6 },
+  { mes: "Julio", valor: 7 },
+  { mes: "Agosto", valor: 8 },
+  { mes: "Septiembre", valor: 9 },
+  { mes: "Octubre", valor: 10 },
+  { mes: "Noviembre", valor: 11 },
+  { mes: "Diciembre", valor: 12 },
+];
+const CurrencyInputCustom = ({ inputRef, onChange, ...props }) => {
+  return (
+    <CurrencyInput
+      {...props}
+      intlConfig={{
+        locale: "es-MX",
+        currency: "MXN",
+      }}
+      onValueChange={(value, name) =>
+        onChange({
+          target: { value, name },
+        })
+      }
+    />
+  );
+};
 
 const ClientLiquidacion = ({
   setMore,
   openSide,
+  liquidacion,
   idContribuyente,
   setIdContribuyente,
 }) => {
   const [cuota, setCuota] = useState("");
   const [periodo, setPeriodo] = useState("");
+  const [month, setMonth] = useState("");
   const [importe, setImporte] = useState("");
-  const [liquidacion, setLiquidacion] = useState("");
   const [showCuota, setShowCuota] = useState("");
+  const [cuotaValue, setCuotaValue] = useState("");
+  const [value, setValue] = useState("");
+  const [error, setError] = useState(false);
 
-  const validationMore = cuota === "" || periodo === "" || importe === "";
+  const navigate = useNavigate();
+  const t = localStorage.getItem("token");
+  const dominio = "http://192.168.10.82:4026/api";
+  const URLCuotas = `${dominio}/Cuotas/`;
+  const validationMore = cuota === "" || periodo.length < 4 || importe === "";
+
+  const l = liquidacion;
+
+  const saveCuota = async () => {
+    let result = await saveLiquidacion(
+      idContribuyente,
+      cuota,
+      periodo,
+      importe,
+      t
+    );
+    if (result == false) {
+      localStorage.removeItem("token");
+      navigate("/");
+    }
+  };
+
+  const callLiquidacion = async () => {
+    const response = await fetch(`${URLCuotas}${idContribuyente}`, {
+      headers: {
+        Authorization: `Bearer ${t}`,
+      },
+    });
+    if (!response.ok) {
+      return false;
+    } else {
+      const data = await response.json();
+      // console.log(data);
+      return await data;
+    }
+  };
 
   const handleCuotaChange = (e) => {
     setCuota(e.target.value);
+    setMonth(e.target.value);
   };
   const handlePeriodoChange = (e) => {
     setPeriodo(e.target.value);
   };
-  const handleImporteChange = (e) => {
-    setImporte(e.target.value);
+  // const handleImporteChange = (e) => {
+  //   console.log(e.target.value);
+  //   setImporte(e.target.value);
+  // };
+
+  const handleImporteChange = ({ target: { value } }) => {
+    setValue(value);
+    const valueValid = value?.includes(".");
+    if (valueValid) {
+      setImporte(value);
+      setError(false);
+    } else {
+      setImporte("");
+      setError(true);
+    }
+
+    console.log(value);
   };
-
   useEffect(() => {
-    const t = localStorage.getItem("token");
-
-    const idC = idContribuyente;
-    const fetchLiquidacion = async () => {
-      console.log("idContribuyente: " + idContribuyente);
-      const dataCuota = await callLiquidacion(idC, t);
-      setLiquidacion(dataCuota);
-      // console.log(dataCuota)
-    };
-    fetchLiquidacion();
     // console.log(userId)
   }, []);
 
@@ -52,7 +134,7 @@ const ClientLiquidacion = ({
           className="cross"
           onClick={() => {
             setMore(false);
-            setLiquidacion("");
+
             setIdContribuyente("");
           }}
         >
@@ -61,8 +143,8 @@ const ClientLiquidacion = ({
         <div className="input-container-observacion">
           <h1 className="title-form-observacion"> Tabla de cuotas</h1>
           <div className="table-container-liquidacion">
-            {Object.keys(liquidacion).map((periodo) => (
-              <div>
+            {Object.keys(l).map((periodo) => (
+              <div key={periodo}>
                 <Button
                   variant="contained"
                   className="button-periodo"
@@ -83,8 +165,8 @@ const ClientLiquidacion = ({
                       </div>
                     </div>
                     <div className="tbody-container">
-                      {liquidacion[periodo].map((cuota) => (
-                        <div className="tbody-data-container">
+                      {l[periodo].map((cuota) => (
+                        <div className="tbody-data-container" key={cuota.id}>
                           <div className="table-data-liquidacion">
                             {cuota.numeroCuota}
                           </div>
@@ -94,7 +176,30 @@ const ClientLiquidacion = ({
                           <div className="table-data-liquidacion">
                             ${cuota.importe}
                           </div>
-                          <div className="table-data-liquidacion">🛒</div>
+                          <div
+                            className="table-data-liquidacion"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              const deleteLiquidacion = async () => {
+                                const response = await fetch(
+                                  `${URLCuotas}${cuota.id}`,
+                                  {
+                                    method: "DELETE",
+                                    headers: {
+                                      Authorization: `Bearer ${t}`,
+                                    },
+                                  }
+                                );
+                                if (!response.ok) {
+                                  localStorage.removeItem("token");
+                                  navigate("/");
+                                }
+                              };
+                              deleteLiquidacion();
+                            }}
+                          >
+                            <img src="basura.svg" alt="eliminar cuota" />
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -106,37 +211,68 @@ const ClientLiquidacion = ({
         </div>
         <div className="input-container-liquidacion">
           <h1 className="title-form-observacion">cargar Liquidación</h1>
-          <TextField
+          {/* <TextField
             id="outlined-helperText"
             label="Cuota"
             //   defaultValue="Default Value"
+            pattern="[0-12]{0,2}"
+            value={cuotaValue}
+            disabled={false}
             onChange={handleCuotaChange}
             className="input-liquidacion"
-          />
+            helperText="1-12"
+          /> */}
+          <FormControl style={{ width: "90%" }}>
+            <InputLabel id="demo-simple-select-label">Month</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={month}
+              label="Mes"
+              onChange={handleCuotaChange}
+              style={{ textAlign: "start", height: "80%" }}
+            >
+              {meses.map((mes) => (
+                <MenuItem value={mes.valor} style={{ height: "25px" }}>
+                  {mes.mes}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             id="outlined-helperText"
             label="Periodo"
             //   defaultValue="Default Value"
             onChange={handlePeriodoChange}
             className="input-liquidacion"
+            helperText="Año"
           />
           <TextField
             id="outlined-helperText"
             label="Importe"
             //   defaultValue="Default Value"
             onChange={handleImporteChange}
+            InputProps={{ inputComponent: CurrencyInputCustom }}
+            value={value}
             className="input-liquidacion"
+            helperText={
+              error ? 'No olvide poner los decimales tras un "."' : "$2000.00"
+            }
+            disabled={false}
           />
         </div>
         <button
           style={
             validationMore ? { backgroundColor: "gray", cursor: "auto" } : null
           }
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault();
             if (!validationMore) {
+              saveCuota();
+              callLiquidacion();
               setMore(false);
-              setLiquidacion("");
-              //setIdContribuyente("")
+              setIdContribuyente("");
+              //setLiquidacion("")
             }
           }}
           className="button-crear"
@@ -148,8 +284,8 @@ const ClientLiquidacion = ({
         className="background-edit"
         onClick={() => {
           setMore(false);
-          setLiquidacion("");
-          //setIdContribuyente("")
+          setIdContribuyente("");
+          //setLiquidacion("")
         }}
       ></div>
     </div>

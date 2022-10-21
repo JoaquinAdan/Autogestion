@@ -22,7 +22,6 @@ function Loby() {
         margin: "auto",
         textAlign: "center",
         maxWidth: "1280px",
-        height: "90vh",
         marginTop: "40px",
         marginBottom: "-40px",
         width: "1200px"

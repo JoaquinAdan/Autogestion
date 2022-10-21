@@ -45,26 +45,22 @@ export const callAnciano = async (idContribuyente, t) => {
   }
 };
 
-const URLCreateCuota = `${dominio}/Cuotas`;
-export const saveLiquidacion = async (idContr, numCuota, per, imp, t) => {
-  const credenciales = {
-    idContribuyente: idContr,
-    numeroCuota: numCuota,
-    periodo: per,
-    importe: imp,
-  };
-  const response = await fetch(URLCreateCuota, {
-    method: "POST",
-    body: JSON.stringify(credenciales),
+const URLCuotas = `${dominio}/Cuotas/`;
+export const callLiquidacion = async (idContribuyente, t) => {
+  const response = await fetch(`${URLCuotas}${idContribuyente}`, {
     headers: {
-      "content-type": "application/json",
       Authorization: `Bearer ${t}`,
     },
   });
-  return response.ok;
+  if (!response.ok) {
+    return false;
+  } else {
+    const data = await response.json();
+    return await data;
+  }
 };
 
-const URLCreateAnciano = `${dominio}/Ancianos`;
+const URLCreate = `${dominio}/Ancianos`;
 export const saveContribuyente = async (id, ord, bool, nom, ape, tel, t) => {
   const credenciales = {
     idContribuyente: id,
@@ -76,7 +72,7 @@ export const saveContribuyente = async (id, ord, bool, nom, ape, tel, t) => {
       telefono: tel,
     },
   };
-  const response = await fetch(URLCreateAnciano, {
+  const response = await fetch(URLCreate, {
     method: "POST",
     body: JSON.stringify(credenciales),
     headers: {

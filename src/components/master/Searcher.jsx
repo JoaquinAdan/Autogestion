@@ -4,12 +4,12 @@ import TextField from "@mui/material/TextField";
 import { callContribuyente } from "../../api";
 import { useNavigate } from "react-router-dom";
 
-
 const Searcher = ({ searcher, openSide }) => {
   const [popUp, setPopUp] = useState(false);
   const [popUpPage, setPopUpPage] = useState(false);
   const [contribuyentes, setContribuyentes] = useState([]);
   const [idContribuyente, setIdContribuyente] = useState("");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const t = localStorage.getItem("token");
 
@@ -17,7 +17,9 @@ const Searcher = ({ searcher, openSide }) => {
     // console.log(e.target.value.length)
     if (e.target.value.length > 3) {
       const toSearch = e.target.value;
+      setLoading(true);
       let data = await callContribuyente(toSearch, t);
+      setLoading(false);
       if (!data) {
         localStorage.removeItem("token");
         navigate("/");
@@ -82,39 +84,67 @@ const Searcher = ({ searcher, openSide }) => {
                     <div>Nombre</div>
                     <div>Cuit</div>
                   </div>
-                  <div className="contribuyente-overflow">
-                    <div className="tbody-container">
-                      {contribuyentes.map((contribuyente) => (
-                        <div
-                          className="tbody-contribuyente"
-                          onClick={() => {
-                            setIdContribuyente(contribuyente.id);
-                          }}
-                          key={contribuyente.id}
-                          style={
-                            idContribuyente == contribuyente.id
-                              ? { backgroundColor: "#1c87e580" }
-                              : null
+                  <div
+                    className="tbody-container-crear"
+                    style={
+                      loading
+                        ? {
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                           }
-                        >
+                        : null
+                    }
+                  >
+                    {loading ? (
+                      <img
+                        src="spinner.svg"
+                        style={
+                          openSide
+                            ? {
+                                transition: ".3s ease",
+                                zIndex: 6,
+                              }
+                            : {
+                                transition: ".3s ease",
+                                zIndex: 6,
+                              }
+                        }
+                      />
+                    ) : (
+                      <>
+                        {contribuyentes.map((contribuyente) => (
                           <div
-                            className="data-contribuyente"
-                            style={{ flex: 0.5 }}
+                            className="tbody-contribuyente"
+                            onClick={() => {
+                              setIdContribuyente(contribuyente.id);
+                            }}
+                            key={contribuyente.id}
+                            style={
+                              idContribuyente == contribuyente.id
+                                ? { backgroundColor: "#1c87e580" }
+                                : null
+                            }
                           >
-                            {contribuyente.id}
+                            <div
+                              className="data-contribuyente"
+                              style={{ flex: 0.5 }}
+                            >
+                              {contribuyente.id}
+                            </div>
+                            <div className="data-contribuyente">
+                              {contribuyente.nombre.toLowerCase()}
+                            </div>
+                            <div
+                              className="data-contribuyente"
+                              style={{ flex: 0.8 }}
+                            >
+                              {contribuyente.cuit}
+                            </div>
                           </div>
-                          <div className="data-contribuyente">
-                            {contribuyente.nombre.toLowerCase()}
-                          </div>
-                          <div
-                            className="data-contribuyente"
-                            style={{ flex: 0.8 }}
-                          >
-                            {contribuyente.cuit}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </>
+                    )}
                   </div>
                 </div>
                 <div style={{ alignSelf: "flex-start" }}>
@@ -125,7 +155,8 @@ const Searcher = ({ searcher, openSide }) => {
                         ? { backgroundColor: "gray", cursor: "auto" }
                         : null
                     }
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       if (idContribuyente !== "") {
                         setPopUpPage(!popUpPage);
                       }
