@@ -154,7 +154,7 @@ const FormCreateUser = ({ idContribuyente }) => {
               : null
           }
           className="button-crear"
-          onClick={saveUser}
+          onClick={() => {saveUser}}
         >
           Crear
         </button>

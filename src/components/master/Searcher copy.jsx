@@ -15,7 +15,7 @@ const Searcher = ({ searcher, openSide }) => {
 
   const handleNameChange = async (e) => {
     // console.log(e.target.value.length)
-    if (e.target.value.length > 2) {
+    if (e.target.value.length > 3) {
       const toSearch = e.target.value;
       setLoading(true);
       let data = await callContribuyente(toSearch, t);
@@ -31,13 +31,19 @@ const Searcher = ({ searcher, openSide }) => {
   };
   return (
     <div className="searcher-container">
+      <input
+        onChange={searcher}
+        type="text"
+        placeholder="Buscar por cuit"
+        className="form-control"
+      />
       <div className="actions-container">
         <button
           className="button-list actions"
           onClick={() => setPopUp(!popUp)}
           style={{ fontWeight: "bold" }}
         >
-          Crear nuevo anciano
+          +
         </button>
       </div>
       {popUp ? (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
@@ -9,10 +9,6 @@ import Button from "@mui/material/Button";
 import CurrencyInput from "react-currency-input-field";
 import { saveLiquidacion } from "../../api";
 import { useNavigate } from "react-router-dom";
-import { AgGridReact } from "ag-grid-react";
-import 'ag-grid-enterprise';
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
 
 const meses = [
   { mes: "Enero", valor: 1 },
@@ -49,7 +45,7 @@ const ClientLiquidacion = ({
   setMore,
   openSide,
   liquidacion,
-  idContribuyente,
+  idContribuyente
 }) => {
   const [cuota, setCuota] = useState("");
   const [periodo, setPeriodo] = useState("");
@@ -66,6 +62,7 @@ const ClientLiquidacion = ({
   const URLCuotas = `${dominio}/Cuotas/`;
   const validationMore = cuota === "" || periodo.length < 4 || importe === "";
   const l = liquidacion;
+
 
   const saveCuota = async () => {
     let result = await saveLiquidacion(
@@ -119,47 +116,12 @@ const ClientLiquidacion = ({
       setError(true);
     }
 
-    // console.log(value);
+    console.log(value);
   };
   useEffect(() => {
     // console.log(userId)
   }, []);
 
-  const containerStyle = useMemo(() => ({ width: "91%", height: "350px" }), []);
-  const gridStyle = useMemo(() => ({ height: "100%", width: "100%" }), []);
-  const [rowData, setRowData] = useState();
-  const [columnDefs, setColumnDefs] = useState([
-    { field: 'country', rowGroup: true, hide: true },
-    { field: 'athlete' },
-    { field: 'sport' },
-    { field: 'total' },
-  ]);
-
-  const defaultColDef = useMemo(() => {
-    return {
-      flex: 1,
-      minWidth: 100,
-      sortable: true,
-      resizable: true,
-    };
-  }, []);
-  
-  const autoGroupColumnDef = useMemo(() => {
-    return {
-      headerName: 'My Group',
-      minWidth: 220,
-      cellRendererParams: {
-        suppressCount: true,
-        checkbox: true,
-      },
-    };
-  }, []);
-
-  const onGridReady = useCallback((params) => {
-    fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
-      .then((resp) => resp.json())
-      .then((data) => setRowData(data));
-  }, []);
   // periodo despliega tabla con cuota, importe, eliminar cuota
   return (
     <div>
@@ -170,27 +132,14 @@ const ClientLiquidacion = ({
         <span
           className="cross"
           onClick={() => {
-            setMore(false);
+            setMore(false)
           }}
         >
           X
         </span>
         <div className="input-container-observacion">
           <h1 className="title-form-observacion"> Tabla de cuotas</h1>
-          <div style={containerStyle}>
-            <div style={gridStyle} className="ag-theme-alpine">
-              <AgGridReact
-                rowData={rowData}
-                columnDefs={columnDefs}
-                defaultColDef={defaultColDef}
-                autoGroupColumnDef={autoGroupColumnDef}
-                groupDisplayType={"singleColumn"}
-                animateRows={true}
-                onGridReady={onGridReady}
-              ></AgGridReact>
-            </div>
-          </div>
-          {/* <div className="table-container-liquidacion">
+          <div className="table-container-liquidacion">
             {Object.keys(l).map((periodo) => (
               <div key={periodo}>
                 <Button
@@ -255,7 +204,7 @@ const ClientLiquidacion = ({
                 ) : null}
               </div>
             ))}
-          </div> */}
+          </div>
         </div>
         <div className="input-container-liquidacion">
           <h1 className="title-form-observacion">cargar declaración jurada</h1>
@@ -307,7 +256,7 @@ const ClientLiquidacion = ({
             if (!validationMore) {
               saveCuota();
               callLiquidacion();
-              setMore(false);
+              setMore(false)
             }
           }}
           className="button-crear"
@@ -318,7 +267,7 @@ const ClientLiquidacion = ({
       <div
         className="background-edit"
         onClick={() => {
-          setMore(false);
+          setMore(false)
         }}
       ></div>
     </div>
