@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FormCreateUser from "./FormCreateUser";
 import TextField from "@mui/material/TextField";
 import { callContribuyente } from "../../api";
 import { useNavigate } from "react-router-dom";
 
-const Searcher = ({ searcher, openSide }) => {
+const Searcher = ({ openSide }) => {
   const [popUp, setPopUp] = useState(false);
   const [popUpPage, setPopUpPage] = useState(false);
   const [contribuyentes, setContribuyentes] = useState([]);
@@ -29,6 +29,10 @@ const Searcher = ({ searcher, openSide }) => {
       // console.log(data);
     }
   };
+  useEffect(() => {
+    setLoading(false);
+  }, []);
+
   return (
     <div className="searcher-container">
       <div className="actions-container">
@@ -74,9 +78,23 @@ const Searcher = ({ searcher, openSide }) => {
                 </div>
                 <div className="table-contribuyente">
                   <div className="thead-contribuyente">
-                    <div>ID</div>
-                    <div>Nombre</div>
-                    <div>Cuit</div>
+                    <div>ID°</div>
+                    <div className="radio-container ">
+                      <img
+                        src="/nombre.svg"
+                        alt="icono de la tabla"
+                        className="icon-title-table"
+                      />
+                      Nombre
+                    </div>
+                    <div className="radio-container ">
+                      <img
+                        src="/cuit.svg"
+                        alt="icono de la tabla"
+                        className="icon-title-table"
+                      />
+                      Cuit
+                    </div>
                   </div>
                   <div
                     className="tbody-container-crear"
@@ -161,7 +179,7 @@ const Searcher = ({ searcher, openSide }) => {
                 </div>
               </form>
             ) : (
-              <FormCreateUser idContribuyente={idContribuyente} />
+              <FormCreateUser idContribuyente={idContribuyente} setPopUp={setPopUp} />
             )}
           </div>
           <div

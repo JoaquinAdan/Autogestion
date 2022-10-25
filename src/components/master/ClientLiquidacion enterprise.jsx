@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
@@ -6,10 +6,11 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import InputAdornment from "@mui/material/InputAdornment";
 import Button from "@mui/material/Button";
+import CurrencyInput from "react-currency-input-field";
 import { saveLiquidacion } from "../../api";
 import { useNavigate } from "react-router-dom";
-import CurrencyInputCustom from "./CurrencyInputCustom";
 import { AgGridReact } from "ag-grid-react";
+import 'ag-grid-enterprise';
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 
@@ -27,6 +28,22 @@ const meses = [
   { mes: "Noviembre", valor: 11 },
   { mes: "Diciembre", valor: 12 },
 ];
+const CurrencyInputCustom = ({ inputRef, onChange, ...props }) => {
+  return (
+    <CurrencyInput
+      {...props}
+      intlConfig={{
+        locale: "es-MX",
+        currency: "MXN",
+      }}
+      onValueChange={(value, name) =>
+        onChange({
+          target: { value, name },
+        })
+      }
+    />
+  );
+};
 
 const ClientLiquidacion = ({
   setMore,
@@ -42,47 +59,6 @@ const ClientLiquidacion = ({
   const [cuotaValue, setCuotaValue] = useState("");
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
-  // const dataForRow = Object.keys(liquidacion).map((cuota) => {liquidacion[cuota].map((data) => setRowData(data))})
-  console.log(liquidacion);
-  const [columnDefs] = useState([
-    { field: "numeroCuota" },
-    { field: "importe", cellRenderer: (p) => (<div>${p.value}</div>) },
-    {
-      field: "eliminar",
-      cellRenderer: (p) => (
-        <div
-          className="table-data-liquidacion"
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            const deleteLiquidacion = async () => {
-              const response = await fetch(`${URLCuotas}${p.data.id}`, {
-                method: "DELETE",
-                headers: {
-                  Authorization: `Bearer ${t}`,
-                },
-              });
-              if (!response.ok) {
-                localStorage.removeItem("token");
-                navigate("/");
-              }
-            };
-            deleteLiquidacion();
-          }}
-        >
-          <img src="basura.svg" alt="eliminar cuota" />
-        </div>
-      ),
-    },
-  ]);
-
-  const defaultColDef = useMemo(
-    () => ({
-      sortable: true,
-      filter: true,
-      resizable: true,
-    }),
-    []
-  );
 
   const navigate = useNavigate();
   const t = localStorage.getItem("token");
@@ -143,12 +119,47 @@ const ClientLiquidacion = ({
       setError(true);
     }
 
-    console.log(value);
+    // console.log(value);
   };
   useEffect(() => {
     // console.log(userId)
   }, []);
 
+  const containerStyle = useMemo(() => ({ width: "91%", height: "350px" }), []);
+  const gridStyle = useMemo(() => ({ height: "100%", width: "100%" }), []);
+  const [rowData, setRowData] = useState();
+  const [columnDefs, setColumnDefs] = useState([
+    { field: 'country', rowGroup: true, hide: true },
+    { field: 'athlete' },
+    { field: 'sport' },
+    { field: 'total' },
+  ]);
+
+  const defaultColDef = useMemo(() => {
+    return {
+      flex: 1,
+      minWidth: 100,
+      sortable: true,
+      resizable: true,
+    };
+  }, []);
+  
+  const autoGroupColumnDef = useMemo(() => {
+    return {
+      headerName: 'My Group',
+      minWidth: 220,
+      cellRendererParams: {
+        suppressCount: true,
+        checkbox: true,
+      },
+    };
+  }, []);
+
+  const onGridReady = useCallback((params) => {
+    fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
+      .then((resp) => resp.json())
+      .then((data) => setRowData(data));
+  }, []);
   // periodo despliega tabla con cuota, importe, eliminar cuota
   return (
     <div>
@@ -164,10 +175,22 @@ const ClientLiquidacion = ({
         >
           X
         </span>
-        <div className="input-container-table">
-          <h1 className="title-form-table"> Tabla de cuotas</h1>
-
-          <div className="table-container-liquidacion">
+        <div className="input-container-observacion">
+          <h1 className="title-form-observacion"> Tabla de cuotas</h1>
+          <div style={containerStyle}>
+            <div style={gridStyle} className="ag-theme-alpine">
+              <AgGridReact
+                rowData={rowData}
+                columnDefs={columnDefs}
+                defaultColDef={defaultColDef}
+                autoGroupColumnDef={autoGroupColumnDef}
+                groupDisplayType={"singleColumn"}
+                animateRows={true}
+                onGridReady={onGridReady}
+              ></AgGridReact>
+            </div>
+          </div>
+          {/* <div className="table-container-liquidacion">
             {Object.keys(l).map((periodo) => (
               <div key={periodo}>
                 <Button
@@ -181,25 +204,58 @@ const ClientLiquidacion = ({
                 </Button>
                 {showCuota === periodo ? (
                   <div>
-                    <div className="tbody-container">
-                      <div
-                        className="ag-theme-alpine"
-                        style={{ height: 300, width: "100%" }}
-                      >
-                        <AgGridReact
-                          rowData={l[periodo]}
-                          columnDefs={columnDefs}
-                          defaultColDef={defaultColDef}
-                          rowSelection="multiple"
-                          animateRows={true}
-                        />
+                    <div className="thead-container-liquidacion">
+                      <div className="table-data-liquidacion">Cuota</div>
+                      <div className="table-data-liquidacion">Periodo</div>
+                      <div className="table-data-liquidacion">Importe</div>
+                      <div className="table-data-liquidacion">
+                        Eliminar Cuota
                       </div>
+                    </div>
+                    <div className="tbody-container">
+                      {l[periodo].map((cuota) => (
+                        <div className="tbody-data-container" key={cuota.id}>
+                          <div className="table-data-liquidacion">
+                            {cuota.numeroCuota}
+                          </div>
+                          <div className="table-data-liquidacion">
+                            {cuota.periodo}
+                          </div>
+                          <div className="table-data-liquidacion">
+                            ${cuota.importe}
+                          </div>
+                          <div
+                            className="table-data-liquidacion"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => {
+                              const deleteLiquidacion = async () => {
+                                const response = await fetch(
+                                  `${URLCuotas}${cuota.id}`,
+                                  {
+                                    method: "DELETE",
+                                    headers: {
+                                      Authorization: `Bearer ${t}`,
+                                    },
+                                  }
+                                );
+                                if (!response.ok) {
+                                  localStorage.removeItem("token");
+                                  navigate("/");
+                                }
+                              };
+                              deleteLiquidacion();
+                            }}
+                          >
+                            <img src="basura.svg" alt="eliminar cuota" />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 ) : null}
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
         <div className="input-container-liquidacion">
           <h1 className="title-form-observacion">cargar declaración jurada</h1>
@@ -214,11 +270,7 @@ const ClientLiquidacion = ({
               style={{ textAlign: "start", height: "80%" }}
             >
               {meses.map((mes) => (
-                <MenuItem
-                  key={mes.valor}
-                  value={mes.valor}
-                  style={{ height: "25px" }}
-                >
+                <MenuItem value={mes.valor} style={{ height: "25px" }}>
                   {mes.valor}
                 </MenuItem>
               ))}
@@ -237,12 +289,7 @@ const ClientLiquidacion = ({
             label="DDJ Importe"
             //   defaultValue="Default Value"
             onChange={handleImporteChange}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">$</InputAdornment>
-              ),
-              inputComponent: CurrencyInputCustom,
-            }}
+            InputProps={{ inputComponent: CurrencyInputCustom }}
             value={value}
             className="input-liquidacion"
             helperText={

@@ -367,8 +367,6 @@
   border-radius: 10px;
   width: 70%;
   height: 30%;
-  display: flex;
-  justify-content: center;
   align-items: center;
   z-index: 4;
   display: flex;
@@ -581,6 +579,9 @@
   border-bottom: 1px solid #2d2d2d46;
   text-align: start;
 }
+.tbody-contribuyente:hover {
+background-color: #d0e3ff;
+}
 .data-contribuyente {
   flex: 1;
   padding-left: 10%;
@@ -612,14 +613,18 @@
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 /** TABLES **/
+.title-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+}
 .ag-header-cell-label {
   
   display: flex;
   justify-content: center;
 
-}
-.ag-center-cols-container {
-  width: 100% !important;
 }
 .ag-header-cell {
   text-align: center;
@@ -628,6 +633,9 @@
   text-transform: capitalize;
   text-align: center;
   padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .title-table-container {
   display: flex;
@@ -743,12 +751,28 @@
   color: white;
   font-weight: 700;
 }
+.input-container-table {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin-bottom: 20px;
+  width: 100%;
+  flex: 1
+  ;
+}
+.title-form-table {
+  font-size: 1.2rem;
+  margin: 15px 0;
+  text-transform: uppercase;
+  padding-left: 5%;
+  align-self: start;
+}
 .table-container-liquidacion {
-  height: 320px;
+  height: 100%;
   overflow-y: scroll;
   width: 90%;
   border-radius: 10px;
-  padding: 10px;
   border: 1px solid #2d2d2d46;
 }
 .table-data-liquidacion {
@@ -773,7 +797,8 @@
   padding-bottom: 10px;
 }
 .tbody-container {
-  height: 150px;
+  height: 200px;
+  width: 100%;
   overflow-y: scroll;
 }
 .input-container-liquidacion {
@@ -787,7 +812,6 @@
 }
 .title-form-observacion {
   font-size: 1.2rem;
-  margin-bottom: 15px;
   text-transform: uppercase;
   padding-left: 5%;
   align-self: start;

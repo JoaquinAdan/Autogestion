@@ -6,9 +6,10 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import InputAdornment from "@mui/material/InputAdornment";
 import Button from "@mui/material/Button";
-import CurrencyInput from "react-currency-input-field";
 import { saveLiquidacion } from "../../api";
 import { useNavigate } from "react-router-dom";
+import CurrencyInputCustom from "./CurrencyInputCustom";
+
 
 const meses = [
   { mes: "Enero", valor: 1 },
@@ -24,28 +25,12 @@ const meses = [
   { mes: "Noviembre", valor: 11 },
   { mes: "Diciembre", valor: 12 },
 ];
-const CurrencyInputCustom = ({ inputRef, onChange, ...props }) => {
-  return (
-    <CurrencyInput
-      {...props}
-      intlConfig={{
-        locale: "es-MX",
-        currency: "MXN",
-      }}
-      onValueChange={(value, name) =>
-        onChange({
-          target: { value, name },
-        })
-      }
-    />
-  );
-};
 
 const ClientLiquidacion = ({
   setMore,
   openSide,
   liquidacion,
-  idContribuyente
+  idContribuyente,
 }) => {
   const [cuota, setCuota] = useState("");
   const [periodo, setPeriodo] = useState("");
@@ -62,7 +47,6 @@ const ClientLiquidacion = ({
   const URLCuotas = `${dominio}/Cuotas/`;
   const validationMore = cuota === "" || periodo.length < 4 || importe === "";
   const l = liquidacion;
-
 
   const saveCuota = async () => {
     let result = await saveLiquidacion(
@@ -132,7 +116,7 @@ const ClientLiquidacion = ({
         <span
           className="cross"
           onClick={() => {
-            setMore(false)
+            setMore(false);
           }}
         >
           X
@@ -219,7 +203,11 @@ const ClientLiquidacion = ({
               style={{ textAlign: "start", height: "80%" }}
             >
               {meses.map((mes) => (
-                <MenuItem value={mes.valor} style={{ height: "25px" }}>
+                <MenuItem
+                  key={mes.valor}
+                  value={mes.valor}
+                  style={{ height: "25px" }}
+                >
                   {mes.valor}
                 </MenuItem>
               ))}
@@ -238,7 +226,12 @@ const ClientLiquidacion = ({
             label="DDJ Importe"
             //   defaultValue="Default Value"
             onChange={handleImporteChange}
-            InputProps={{ inputComponent: CurrencyInputCustom }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">$</InputAdornment>
+              ),
+              inputComponent: CurrencyInputCustom ,
+            }}
             value={value}
             className="input-liquidacion"
             helperText={
@@ -256,7 +249,7 @@ const ClientLiquidacion = ({
             if (!validationMore) {
               saveCuota();
               callLiquidacion();
-              setMore(false)
+              setMore(false);
             }
           }}
           className="button-crear"
@@ -267,7 +260,7 @@ const ClientLiquidacion = ({
       <div
         className="background-edit"
         onClick={() => {
-          setMore(false)
+          setMore(false);
         }}
       ></div>
     </div>

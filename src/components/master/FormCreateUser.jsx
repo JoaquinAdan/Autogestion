@@ -4,7 +4,7 @@ import Radio from "@mui/material/Radio";
 import { saveContribuyente } from "../../api";
 import { useNavigate } from "react-router-dom";
 
-const FormCreateUser = ({ idContribuyente }) => {
+const FormCreateUser = ({ idContribuyente, setPopUp }) => {
   const [orden, setOrden] = useState("");
   const [selectedValue, setSelectedValue] = useState("");
   const [nombre, setNombre] = useState("");
@@ -24,6 +24,14 @@ const FormCreateUser = ({ idContribuyente }) => {
       telefono,
       t
     );
+    setOrden("")
+    setSelectedValue("")
+    setNombre("")
+    setApellido("")
+    setTelefono("")
+    setPopUp(false)
+    alert("Su anciano ha sido creado")
+
     if (result == false) {
       localStorage.removeItem("token")
       navigate("/")
@@ -154,7 +162,7 @@ const FormCreateUser = ({ idContribuyente }) => {
               : null
           }
           className="button-crear"
-          onClick={() => {saveUser}}
+          onClick={saveUser}
         >
           Crear
         </button>

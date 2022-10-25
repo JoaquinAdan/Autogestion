@@ -10,11 +10,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // import { callAncianos } from "../../api";
 import { RiInformationLine } from "react-icons/ri";
 import { callAnciano } from "../../api";
-
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import { render } from "react-dom";
 
 const FechaA = (p) => {
   return <div>{p.value.slice(0, 10)}</div>;
@@ -52,16 +50,30 @@ const Liquidacion = ({
   );
 };
 const SearchComponent = ({ openSide }) => {
-  const [users, setUsers] = useState([]);
   const [idContribuyente, setIdContribuyente] = useState("");
   const [liquidacion, setLiquidacion] = useState("");
   const [bajaAnciano, setBajaAnciano] = useState(null);
   const [liquidacionAnciano, setLiquidacionAnciano] = useState(null);
   const [rowData, setRowData] = useState([]);
   const [columnDefs, setColumnDefs] = useState([
-    { field: "id" },
+    { field: "id", headerName: "Id°" },
     {
       field: "nombre",
+      headerComponentParams: {
+        template:
+          '<div class="ag-cell-label-container" role="presentation">' +
+          '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+          '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
+          '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
+          '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
+          '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
+          '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
+          '    <img src="/nombre.svg" alt="icono de la tabla" class="icon-title-table"/> ' +
+          '    <span ref="eText" class="ag-header-cell-text" role="columnheader"></span>' +
+          '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+          "  </div>" +
+          "</div>",
+      },
       valueGetter: (p) => {
         const nombre = p.data.nombre.toLowerCase() || "";
         const apellido =
@@ -69,8 +81,43 @@ const SearchComponent = ({ openSide }) => {
         return nombre + " " + apellido;
       },
     },
-    { field: "cuit" },
-    { field: "fechaAlta", cellRenderer: FechaA },
+    {
+      field: "cuit",
+      headerComponentParams: {
+        template:
+          '<div class="ag-cell-label-container" role="presentation">' +
+          '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+          '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
+          '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
+          '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
+          '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
+          '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
+          '    <img src="/cuit.svg" alt="icono de la tabla" class="icon-title-table"/> ' +
+          '    <span ref="eText" class="ag-header-cell-text" role="columnheader"></span>' +
+          '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+          "  </div>" +
+          "</div>",
+      },
+    },
+    {
+      field: "fechaAlta",
+      cellRenderer: FechaA,
+      headerComponentParams: {
+        template:
+          '<div class="ag-cell-label-container" role="presentation">' +
+          '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+          '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
+          '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
+          '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
+          '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
+          '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
+          '    <img src="/fechaalta.svg" alt="icono de la tabla" class="icon-title-table"/> ' +
+          '    <span ref="eText" class="ag-header-cell-text" role="columnheader"></span>' +
+          '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+          "  </div>" +
+          "</div>",
+      },
+    },
     {
       field: "fechaBaja",
       cellRenderer: (p) => (
@@ -89,6 +136,21 @@ const SearchComponent = ({ openSide }) => {
           />
         </div>
       ),
+      headerComponentParams: {
+        template:
+          '<div class="ag-cell-label-container" role="presentation">' +
+          '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+          '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
+          '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
+          '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
+          '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
+          '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
+          '    <img src="/fechabaja.svg" alt="icono de la tabla" class="icon-title-table"/> ' +
+          '    <span ref="eText" class="ag-header-cell-text" role="columnheader"></span>' +
+          '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+          "  </div>" +
+          "</div>",
+      },
     },
     {
       field: "liquidacion",
@@ -112,7 +174,7 @@ const SearchComponent = ({ openSide }) => {
                   return false;
                 } else {
                   const data = await response.json();
-                  console.log(data);
+                  // console.log(data);
                   setLiquidacion(data);
                   return await data;
                 }
@@ -128,12 +190,29 @@ const SearchComponent = ({ openSide }) => {
           />
         );
       },
+      headerComponentParams: {
+        template:
+          '<div class="ag-cell-label-container" role="presentation">' +
+          '  <span ref="eMenu" class="ag-header-icon ag-header-cell-menu-button"></span>' +
+          '  <div ref="eLabel" class="ag-header-cell-label" role="presentation">' +
+          '    <span ref="eSortOrder" class="ag-header-icon ag-sort-order"></span>' +
+          '    <span ref="eSortAsc" class="ag-header-icon ag-sort-ascending-icon"></span>' +
+          '    <span ref="eSortDesc" class="ag-header-icon ag-sort-descending-icon"></span>' +
+          '    <span ref="eSortNone" class="ag-header-icon ag-sort-none-icon"></span>' +
+          '    <img src="/liquidacion.svg" alt="icono de la tabla" class="icon-title-table"/> ' +
+          '    <span ref="eText" class="ag-header-cell-text" role="columnheader"></span>' +
+          '    <span ref="eFilter" class="ag-header-icon ag-filter-icon"></span>' +
+          "  </div>" +
+          "</div>",
+      },
     },
   ]);
+
   const defaultColDef = useMemo(
     () => ({
       sortable: true,
       filter: true,
+      resizable: true,
     }),
     []
   );
